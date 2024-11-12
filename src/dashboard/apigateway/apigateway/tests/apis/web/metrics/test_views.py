@@ -24,11 +24,7 @@ from apigateway.core.models import Resource
 class TestQueryRangeApi:
     def test_get(self, mocker, fake_stage, request_view):
 
-        resource_obj = G(
-            Resource,
-            name="testname001",
-            gateway=fake_stage.gateway
-        )
+        resource_obj = G(Resource, name="testname001", gateway=fake_stage.gateway)
 
         data = {
             "data": {
@@ -38,25 +34,27 @@ class TestQueryRangeApi:
                         "alias": "_result_",
                         "metric_field": "_result_",
                         "unit": "",
-                        "target": "route=\"bk-esb.prod.{}\"".format(resource_obj.id),
-                        "dimensions": {
-                            "route": "bk-esb.prod.2152"
-                        },
-                        "datapoints": [
-                        ]
+                        "target": 'route="bk-esb.prod.{}"'.format(resource_obj.id),
+                        "dimensions": {"route": "bk-esb.prod.2152"},
+                        "datapoints": [],
                     },
                     {
                         "alias": "_result_",
                         "metric_field": "_result_",
                         "unit": "",
-                        "target": "route=\"bk-esb.prod.1234\"",
-                        "dimensions": {
-                            "route": "bk-esb.prod.1234"
-                        },
-                        "datapoints": [
-                        ]
-                    }
-                ]
+                        "target": 'route="bk-esb.prod.1234"',
+                        "dimensions": {"route": "bk-esb.prod.1234"},
+                        "datapoints": [],
+                    },
+                    {
+                        "alias": "_result_",
+                        "metric_field": "_result_",
+                        "unit": "",
+                        "target": "",
+                        "dimensions": {},
+                        "datapoints": []
+                    },
+                ],
             }
         }
 
@@ -81,7 +79,8 @@ class TestQueryRangeApi:
 
         assert response.status_code == 200
         assert result["data"]["data"]["series"][0]["target"] == "testname001"
-        assert result["data"]["data"]["series"][1]["target"] == "route=\"bk-esb.prod.1234\""
+        assert result["data"]["data"]["series"][1]["target"] == 'route="bk-esb.prod.1234"'
+        assert len(result["data"]["data"]["series"]) == 2
 
         mocker.patch(
             "apigateway.apis.web.metrics.views.MetricsRangeFactory.create_metrics",
